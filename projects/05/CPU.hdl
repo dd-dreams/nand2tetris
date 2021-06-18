@@ -39,5 +39,50 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+        // get op code
+        Or(a=instruction[15], b=false, out=opcode);
+
+        // handle instruction and addressM
+        Mux16(a=instruction, b=ALUoutput, sel=opcode, out=inputA);
+
+        Not(in=opcode, out=notopcode);
+        Or(a=notopcode, b=instruction[5], out=loadfora);
+        ARegister(in=inputA, load=loadfora, out[0..14]=addressM, out=aregister);
+        
+
+        // --handle ALU--
+        Mux16(a=aregister, b=inM, sel=instruction[12], out=aluinput);
+
+        ALU(x=dregister, y=aluinput, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=ALUoutput, zr=zr, ng=ng);
+
+        // handle D register
+        And(a=opcode, b=instruction[4], out=loadford);
+        DRegister(in=ALUoutput, load=loadford, out=dregister);
+
+        // handle writeM (doing it by checking the op code)
+        And(a=opcode, b=instruction[3], out=writeM);
+
+        // --handle PC--
+        // check if output is negative or zero
+        Or(a=zr, b=ng, out=zeroORneg);
+        Not(in=zeroORneg, out=notzeroorneg);
+
+        // checking if requested for condtion
+        Or(a=instruction[1], b=instruction[2], out=tmp);
+        Or(a=tmp, b=instruction[0], out=condition);
+
+        // checking if condition matches zeroORneg
+        And(a=instruction[0], b=notzeroorneg, out=ifpos);
+        And(a=instruction[1], b=zr, out=ifzero);
+        And(a=instruction[2], b=ng, out=ifneg);
+
+        Or(a=ifpos, b=ifzero, out=tmp1);
+        Or(a=tmp1, b=ifneg, out=loadforpc);
+
+        // check op code
+        And(a=opcode, b=loadforpc, out=jump);
+
+        PC(in=aregister, load=jump, inc=true, reset=reset, out[0..14]=pc);
+
+
 }
