@@ -9,4 +9,41 @@
 // This program only needs to handle arguments that satisfy
 // R0 >= 0, R1 >= 0, and R0*R1 < 32768.
 
-// Put your code here.
+@R0
+D=M
+
+// index
+@i
+M=0
+D=M
+
+// resetting value
+@R2
+M=0
+
+(LOOP)
+// checking if we need to end the loop (finished multiplication)
+@R1
+D=M-D
+
+@END
+D;JEQ
+
+@R0
+D=M
+
+// adding R0
+@R2
+M=D+M
+
+// adding to index
+@i
+M=M+1
+D=M
+
+@LOOP
+0;JMP
+
+(END)
+@END
+0;JMP
