@@ -42,16 +42,18 @@ class Parser:
     def commandType(self):
         if self.__current_command is None:
             return
-        if '@' in self.__current_command[0]: 
+        if '@' in self.__current_command: 
             return A_COMMAND 
-        elif '(' in self.__current_command[0]:
+        elif '(' in self.__current_command:
             return L_COMMAND 
         else:
             return C_COMMAND
 
     def symbol(self):
-        if self.commandType() == A_COMMAND or self.commandType() == L_COMMAND:
+        if self.commandType() == A_COMMAND:  # removing @
             return self.__current_command[1:]
+        if self.commandType() == L_COMMAND:  # removing parentheses
+            return self.__current_command[1:-1]
 
     def dest(self):
         if self.commandType() == C_COMMAND:
@@ -83,3 +85,15 @@ class Parser:
     def get_end(self):
         return self.end
 
+    def reset_program(self):
+        """
+        sometimes we will need to reset the program,
+        if we are for example going through the assembly file
+        again.
+
+        :return:
+        """
+        
+        self.counter = 1
+        self.__current_command = self.input_file[0]
+        self.end = False 
