@@ -1,7 +1,5 @@
 from definitions import *
 
-# TODO: a bug, somewhere. FIX IT!!
-
 
 class CodeWriter:
     def __init__(self, name):
