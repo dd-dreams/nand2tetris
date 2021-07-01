@@ -3,3 +3,6 @@ tools
 *.tmp
 *.cmp
 __pycache__
+.idea
+MemoryAccess
+StackArithmetic

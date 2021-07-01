@@ -16,16 +16,16 @@ THAT = 4
 push *segment i* => addr = segmentPointer + i, *SP = *addr, SP++
 pop *segment i* => addr = segmentPointer + i, SP--, *SP = *addr
 
-push *constant i* => *SP = i, SP++
-(no pop ofcourse, since its a constant)
+push *constant i* => SP = i, SP++
+(no pop of-course, since it's a constant)
 
-assuming file is called "Foo.vm"
+assuming a file is called "Foo.vm"
 when using static variables, push/pop static i will be
 turned into an assembly reference Foo.i (@Foo.i)
 
-push *temp i => 5* + i, *SP = *addr, SP++
+push *temp i* => addr = 5 + i, *SP = *addr, SP++
 
-pop *temp i* => 5 + i, SP--, *SP = *addr
+pop *temp i* => addr = 5 + i, SP--, *SP = *addr
 
 push *pointer 0/1* => *SP = THIS/THAT, SP++
 
@@ -37,7 +37,7 @@ pointer 1 => RAM[4]
 
 # Mission for project 7
 
-## <u>Arthimetic / Logical commands</u>
+## <u>Arithmetic / Logical commands</u>
 
 *add*
 
@@ -78,3 +78,6 @@ if-goto *label*
 function *functionName nVars*
 
 call *functionName nArgs*
+
+# Notice
+some files in `assemblies_solutions` aren't updated
