@@ -20,9 +20,3 @@ def main(codewriter, parser):
             break
     codewriter.close()
 
-
-if __name__ == '__main__':
-    filename_ = "StackTest.vm"
-    codewriter_ = CodeWriter("StackTest")
-    parser_ = Parser(filename_)
-    main(codewriter_, parser_)
