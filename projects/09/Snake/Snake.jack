@@ -1,0 +1,169 @@
+
+class Snake {
+  
+    field int maxLen;  // size of circle 
+    field char current_key;
+    field String direction;  // variable to specify if the circle if going up or down (true), left or right (false) 
+    field int r;  // radius
+    field int x, y;  // coordinates
+    
+    field boolean exit;
+
+    // CONSTANTS
+    field int LEFT;
+    field int RIGHT;
+    field int UP;
+    field int DOWN;
+    field String EXIT_MSG;
+
+    // constructor
+    constructor Snake new(int starting_size, int maxLength) {
+        let r = starting_size;
+        let current_key = 132; // default is circle to move to the right
+        
+        let maxLen = maxLength;
+        
+        let x = 50;
+        let y = 100;
+
+        let exit = false;
+
+        let LEFT = 1;
+        let RIGHT = 2;
+        let UP = 3;
+        let DOWN = 4;
+        let EXIT_MSG = "Thanks for playing bro!";
+
+        let direction = RIGHT;
+
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void run() {
+        while (~(exit)) {
+            do Sys.wait(10);
+            do checkArrows();
+            do drawCircle(true);
+            do movePlayer();
+            do drawCircle(false);
+            do checkW();
+            do checkQ();
+        }
+        
+        do Output.moveCursor(10, 10);
+        do Output.printString(EXIT_MSG);
+        do dispose();
+        //do Sys.halt();
+        return; 
+    }
+
+    method void addRadius() {
+        let r = r + 1;
+
+        return;
+    }
+
+    /* 
+    a method for checking if the user pressed any of the arrow keys
+    true for left or right arrow, false for up or down arrow
+    **/ 
+    method void checkArrows() {
+        var char key;
+        let key = Keyboard.keyPressed();
+       
+        // if no key is pressed
+        if (key = 0) {
+            let key = current_key;
+        }
+        else {
+            // left or right
+            if (key = 130) {let direction = LEFT;}
+            if (key = 132) {let direction = RIGHT;}
+            
+            // up or down
+            if (key = 131) {let direction = UP;}
+            if (key = 133) {let direction = DOWN;}
+
+            let current_key = key;
+        }
+        return;
+    }
+
+    /*
+    if you press W, the circle will get bigger.
+    this method will check if the player pressed this key or hasnt
+    and react according to the result
+    **/
+    method void checkW() {
+        
+        // ascii(W) = 87 
+        if (Keyboard.keyPressed() = 87) {
+            // checking if circle reached the limit
+            if (~(r = maxLen)) {
+                do addRadius();
+            }
+        }
+
+        return;
+    }
+
+    /*
+    method for checking if the user wants to exit
+    **/
+    method void checkQ() {
+        
+        // ascii(Q) = 81
+        if (Keyboard.keyPressed() = 81) {
+            let exit = true;
+        }
+        return;
+    }
+
+    method void movePlayer() {
+
+        if (direction = LEFT) {let x = x - 1;}
+        if (direction = RIGHT) {let x = x + 1;}
+        if (direction = UP) {let y = y - 1;}
+        if (direction = DOWN) {let y = y + 1;}
+        
+        return;
+    }
+
+    method void clearCircle() {
+       
+        // changing color to white
+        do Screen.setColor(false);
+        do Screen.drawCircle(x, y, r);
+        // changing color to black
+        do Screen.setColor(true);
+
+        return;
+    }
+
+    /* 
+    this method will draw the circle, or clear his tails
+
+    @param clear: specify if we want to clear the circle (if we wont clear
+    then the circle will just leave black circles)
+    **/
+    method void drawCircle(boolean clear) {
+        do Screen.setColor(true);
+
+        // printing the circle
+        if (clear) {
+            do clearCircle(); 
+        }
+        else {
+            do Screen.drawCircle(x, y, r);
+        }
+
+        return;
+    }
+    
+}
+

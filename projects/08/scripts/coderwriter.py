@@ -12,7 +12,6 @@ class CodeWriter:
         self.output_file = open(self.final_name + ASM, "w+")
         self.count_loops = 0  # counting how many loops there is
         self.count_retAddrs = 0  # counting how many return addresses there is
-        self.count_functions = 0
         self.current_filename = None
         self.current_function = None
 
@@ -242,7 +241,7 @@ class CodeWriter:
         :return: final command
         """
         command = "\n// label {0}{1}\n" \
-                  "({0}{1}${2})\n".format(self.current_function, self.count_functions, name)
+                  "({0}${1})\n".format(self.current_function, name)
 
         self.output_file.write(command)
 
@@ -253,21 +252,21 @@ class CodeWriter:
         :return: final command
         """
         command = "\n// goto {0}{1}\n" \
-                  "@{0}{1}${2}\n" \
-                  "0;JMP\n".format(self.current_function, self.count_functions, label)
+                  "@{0}${1}\n" \
+                  "0;JMP\n".format(self.current_function, label)
 
         self.output_file.write(command)
 
     def writeIf(self, label):
-        command = "\n// if-goto {0}{1}${2}\n" \
+        command = "\n// if-goto {0}${1}\n" \
                   "@SP\nAM=M-1\nD=M\n" \
-                  "@{0}{1}${2}\nD;JNE\n".format(self.current_function, self.count_functions, label)
+                  "@{0}${1}\nD;JNE\n".format(self.current_function, label)
         self.output_file.write(command)
 
     def writeFunction(self, name, nvars):
         command = "\n// function {0} {1}\n".format(name, nvars)  # adding comment
         self.current_function = name
-        command += "({0}{1})".format(name, self.count_functions)  # adding function label
+        command += "({0})".format(name)  # adding function label
         for _ in range(nvars):  # adding/pushing new local variables to the stack
             command += "@SP\nAM=M+1\nM=0\n"  # creating local variables
         if nvars != 0:
@@ -277,9 +276,8 @@ class CodeWriter:
         self.output_file.write(command)
 
     def writeCall(self, name, nargs):
-        command = "\n// call {0} {1}\n".format(name, nargs)
-        command += "@{0}{1}$ret.{2}\nD=A\n@SP\nM=M+1\nA=M-1\nM=D\n".format(name, self.count_functions,
-                                                                           self.count_retAddrs)
+        command = "\n// call {0}\n".format(name, nargs)
+        command += "@{0}$ret.{1}\nD=A\n@SP\nM=M+1\nA=M-1\nM=D\n".format(name, self.count_retAddrs)
         self.output_file.write(command)
         self.push_values(LCL)
         self.push_values(ARG)
@@ -287,8 +285,8 @@ class CodeWriter:
         self.push_values(THAT)
         command = "@5\nD=A\n@SP\nD=M-D\n@{0}\nD=D-A\n@ARG\nM=D\n".format(nargs)  # repositions ARG
         command += "@SP\nD=M\n@LCL\nM=D\n"  # repositions LCL
-        command += "@{0}{1}\n0;JMP\n".format(name, self.count_functions)  # goto functionName
-        command += "({0}{1}$ret.{2})\n".format(name, self.count_functions, self.count_retAddrs)
+        command += "@{0}\n0;JMP\n".format(name)  # goto functionName
+        command += "({0}$ret.{1})\n".format(name, self.count_retAddrs)
         self.output_file.write(command)
         self.count_retAddrs += 1
 
@@ -299,8 +297,8 @@ class CodeWriter:
         self.output_file.write(command)
         self.write_d_register_pop(0, ARG)
         command = "@ARG\nD=M\n@SP\nM=D+1\n"
-        command += self.writeReturnHelper(THAT) + self.writeReturnHelper(THIS) + self.writeReturnHelper(ARG) + \
-                   self.writeReturnHelper(LCL)  # reposition memory segments
+        command += self.writeReturnHelper(THAT) + self.writeReturnHelper(THIS) + \
+                   self.writeReturnHelper(ARG) + self.writeReturnHelper(LCL)  # reposition memory segments
         command += "@R8\nA=M\n0;JMP\n"  # repositions return address
 
         self.output_file.write(command)
