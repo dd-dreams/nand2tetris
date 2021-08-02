@@ -1,5 +1,5 @@
 
-class Snake {
+class GrowingCircle {
   
     field int maxLen;  // size of circle 
     field char current_key;
@@ -17,7 +17,7 @@ class Snake {
     field String EXIT_MSG;
 
     // constructor
-    constructor Snake new(int starting_size, int maxLength) {
+    constructor GrowingCircle new(int starting_size, int maxLength) {
         let r = starting_size;
         let current_key = 132; // default is circle to move to the right
         
@@ -58,7 +58,6 @@ class Snake {
         do Output.moveCursor(10, 10);
         do Output.printString(EXIT_MSG);
         do dispose();
-        //do Sys.halt();
         return; 
     }
 
@@ -111,7 +110,7 @@ class Snake {
 
         return;
     }
-
+    
     /*
     method for checking if the user wants to exit
     **/

@@ -2,10 +2,10 @@
 class Main {
     
     function void main() {
-        var Snake snake;
+        var GrowingCircle circle;
         
-        let snake = Snake.new(1, 30);
-        do snake.run();
+        let circle = GrowingCircle.new(1, 30);
+        do circle.run();
         return;
     }
 }
