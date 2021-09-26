@@ -39,4 +39,4 @@ INT_CONST = "integerConstant"
 STRING_CONST = "stringConstant"
 
 
-RE_MATCH_TOKENS = r"[\[\]{}().,*/\|<>+_\-;=\&\~]|\"[\w\s]+\"|\w+"
+RE_MATCH_TOKENS = r"[\[\]{}().,*/\|<>+_\-;=\&\~]|\"[\w\s?,;:]+|\w+"

@@ -65,7 +65,7 @@ class JackTokenizer:
 
     def advance(self):
         # moving to next line
-        if len(self.__current_line) == 0:
+        if len(self.tokens) == 0:
             self.__current_line = self.file[self.count_lines]
             self.count_lines += 1
             self.tokens = self.reg.findall(self.__current_line)
@@ -79,11 +79,9 @@ class JackTokenizer:
         if possib is None:  # if there is no such symbol or keywords
             if grammar.integerConstant(self.__current_token):
                 self.__current_type = INT_CONST
-            elif '"' in self.__current_token[1:]:  # if its a string const
-                if self.__current_token[-1] != '\"':
-                    raise common.WrongSyntax(self.count_lines, self.__current_token)
+            elif '"' in self.__current_token:  # if its a string const
                 # removing quote and adding the rest of the string
-                self.__current_token = self.__current_token[1:-1]
+                self.__current_token = self.__current_token[1:]
                 self.__current_type = STRING_CONST
             elif self.__current_token in KEYWORDS:
                 self.__current_type = KEYWORD
