@@ -130,7 +130,7 @@ class CompilationEngine:
     def compileSubroutineBody(self):
         """
 
-        :return: how many local variables were declared
+        :return: 
         """
         declared_variables = False
         if self.current_token != OPEN_CURLY:
@@ -253,7 +253,7 @@ class CompilationEngine:
 
     def compile_code_blocks(self):
         """
-        compiling the statements in code blocks like while if or else
+        compiling the statements in code blocks like while if or else code blocks
         :return:
         """
         self.tokenizer.advance()
@@ -267,8 +267,8 @@ class CompilationEngine:
 
     def compileIf(self):
         """
-        compiling if statement according to PDF
-        :return: true if there is an else statement, which tells compileStatements() to call an if statement again
+        compiling `if` and `else` statement according to PDF
+        :return: 
         """
         if self.current_token in (IF, ELSE):
             type_of_condition = self.current_token
@@ -359,7 +359,7 @@ class CompilationEngine:
     def compileTerm(self):
         """
         compiling term according to PDF
-        :return: true if the term was array indexing
+        :return: 
         """
         if self.current_token == "=":  # compileLet method handles this
             return self.current_token
