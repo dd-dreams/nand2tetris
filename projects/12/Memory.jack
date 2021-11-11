@@ -8,27 +8,115 @@
  * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
  * consists of 32,768 words, each holding a 16-bit binary number.
  */ 
+
 class Memory {
+
+    static Array ram;
+    static Array heap, freeList;
+
+    static int heapbase, heapend, heap_size;
+    static int NEXT, SIZE;
 
     /** Initializes the class. */
     function void init() {
+        let ram = 0;
+
+        let NEXT = 0;
+        let SIZE = 1;
+
+        let heapbase = 2048;
+        let heapend = 16384;
+        
+        let heap_size = heapend - heapbase;  // 16384 - 2048 = 14336
+
+        let heap = heapbase;
+        let freeList = heapbase; // linked list head
+        let freeList[NEXT] = heapbase; // next
+        let freeList[SIZE] = heap_size - 2; // heap length
+        
+        return;
     }
 
     /** Returns the RAM value at the given address. */
     function int peek(int address) {
+        return ram[address];
     }
 
     /** Sets the RAM value at the given address to the given value. */
     function void poke(int address, int value) {
+        let ram[address] = value;
+        return;
     }
 
     /** Finds an available RAM block of the given size and returns
      *  a reference to its base address. */
     function int alloc(int size) {
+        var Array segment, last_segment, block;
+        
+        let segment = Memory.bestFit(size);
+
+        if (~(segment = freeList)) {  // if we did find an available segment
+            let block = segment;
+        }
+        else {  // else we need to create a new segment
+            if (freeList[SIZE] > (size + 2)) {  // if there is any available space
+                let last_segment = freeList[NEXT];
+                while (~(last_segment[NEXT] = freeList)) {  // reach to the last segment
+                    let last_segment = last_segment[NEXT];
+                }
+                let freeList[SIZE] = freeList[SIZE] - size; // updating freeList size
+                if (last_segment = freeList) {  // if we're creating the first segment
+                    let block = freeList + freeList[SIZE];
+                }
+                else {
+                    let block = last_segment - size - 2;
+                }
+                let last_segment[NEXT] = block; // setting the next segment
+                let block[NEXT] = heapbase; // currently its the last segment, then its returning to freeList
+                let block[SIZE] = size;
+            }
+            else {
+                do Sys.error(5);
+            }
+        }
+        return block + 2;
+    }
+
+    function Array bestFit(int size) {
+        var Array segment, tmp;
+
+        let segment = freeList;
+        let tmp = freeList[NEXT];
+
+        while (~(tmp = freeList)) {
+            // if segment.size is enough and if its a smaller and still fits segment and available for allocation
+            if (~(size > tmp[SIZE]) & ~(tmp[SIZE] > segment[SIZE]) & (tmp[2] = (freeList + 1))) {
+                let segment = tmp;
+            }
+            let tmp = tmp[NEXT]; // advancing to segment.next
+        }
+        return segment;
     }
 
     /** De-allocates the given object (cast as an array) by making
      *  it available for future allocations. */
-    function void deAlloc(Array o) {
+    function void deAlloc(Array o) { // TODO: fix deAlloc
+        var Array last_segment, whole_object;
+        
+        let last_segment = freeList[NEXT];
+        let whole_object = o - 2;  // including segment.next, segment.size
+        
+        while (~(last_segment[NEXT] = freeList)) {
+            let last_segment = last_segment[NEXT];
+        }
+        
+        // checking if we are disposing the first segment, which then we need to set a new start address in freeList[NEXT]
+        if (whole_object = freeList[NEXT]) { 
+            let freeList[NEXT] = whole_object[NEXT];
+        }
+        let last_segment[NEXT] = whole_object;
+        let whole_object[NEXT] = freeList;  
+        let whole_object[2] = freeList + 1;  // when that[0] == addr(freeList) + 1, its the sign this segment is available for allocation
+        return;
     }    
 }
