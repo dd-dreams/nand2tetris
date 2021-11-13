@@ -259,9 +259,34 @@ class Output {
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        var int screen_x;
+        var int screen_y;
+        do Screen.setColor(false);
+
+
         if (~(cursor_x = 0)) {
             let cursor_x = cursor_x - 1;
         }
+        else {
+            if (cursor_y = 0) {
+                return;
+            }
+            let cursor_x = 63;
+            let cursor_y = cursor_y - 1;
+        }
+        
+        /* erasing last chareacter from screen */
+        let screen_y = (cursor_y * 11) + 11; // 23 rows * 11 = 253
+        let screen_x = cursor_x * 8; // 64 columns * 8 == 512
+        do Screen.drawRectangle(screen_x, screen_y - 11, screen_x + 8, screen_y);
+        
+        do Screen.setColor(true);
+        return;
+    }
+    
+    /* advances cursor_x */
+    function void advance() {
+        let cursor_x = cursor_x + 1;
         return;
     }
 }

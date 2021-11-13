@@ -100,7 +100,7 @@ class Memory {
 
     /** De-allocates the given object (cast as an array) by making
      *  it available for future allocations. */
-    function void deAlloc(Array o) { // TODO: fix deAlloc
+    function void deAlloc(Array o) {
         var Array last_segment, whole_object;
         
         let last_segment = freeList[NEXT];
